@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FeastFlow · food booking</title>
+  <!-- Font Awesome icons & Google Font for a modern look -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #fefaf6 0%, #fff6ed 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    /* main card */
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+      padding: 2rem 2rem 2.2rem;
+      transition: all 0.2s ease;
+    }
+
+    /* header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo i {
+      font-size: 2.2rem;
+      color: #e86f2e;
+      background: #fff1e6;
+      padding: 0.55rem;
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 18px -8px rgba(232, 111, 46, 0.3);
+    }
+
+    .logo h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #2d1b0e, #a3572b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .badge {
+      background: #eae3db;
+      padding: 0.5rem 1.2rem;
+      border-radius: 3rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4f3a2b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .badge i {
+      color: #e86f2e;
+    }
+
+    /* search + categories */
+    .search-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .search-wrapper {
+      flex: 2;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 1.1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #b2947a;
+      font-size: 1rem;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      border: 1.5px solid #edd9c9;
+      background: #fffdfb;
+      border-radius: 3rem;
+      font-size: 0.95rem;
+      transition: all 0.25s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .search-wrapper input:focus {
+      outline: none;
+      border-color: #e86f2e;
+      box-shadow: 0 0 0 4px rgba(232, 111, 46, 0.15);
+      background: white;
+    }
+
+    .category-filters {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .cat-btn {
+      background: #ffffffd6;
+      border: 1.5px solid #edd9c9;
+      padding: 0.65rem 1.3rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #5a3f2b;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+
+    .cat-btn i {
+      color: #b87c4e;
+      font-size: 0.9rem;
+    }
+
+    .cat-btn:hover {
+      background: #f7ede4;
+      border-color: #dbbc9f;
+      transform: translateY(-2px);
+    }
+
+    .cat-btn.active {
+      background: #e86f2e;
+      border-color: #e86f2e;
+      color: white;
+      box-shadow: 0 12px 18px -10px #e86f2e90;
+    }
+
+    .cat-btn.active i {
+      color: white;
+    }
+
+    /* main grid layout */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 1.8rem;
+      }
+      .app-container {
+        padding: 1.5rem;
+      }
+      .logo h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* menu items grid */
+    .menu-section h2, .booking-section h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #3b2c1f;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      letter-spacing: -0.3px;
+    }
+
+    .menu-section h2 i, .booking-section h2 i {
+      color: #e86f2e;
+      font-size: 1.3rem;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 0.4rem;
+    }
+
+    /* custom scroll */
+    .menu-grid::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .menu-grid::-webkit-scrollbar-track {
+      background: #f3e7dd;
+      border-radius: 10px;
+    }
+
+    .menu-grid::-webkit-scrollbar-thumb {
+      background: #d4b8a2;
+      border-radius: 10px;
+    }
+
+    .menu-card {
+      background: #ffffffea;
+      border: 1px solid #f0e1d4;
+      border-radius: 1.5rem;
+      padding: 1.1rem 1rem 1rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-card:hover {
+      border-color: #e8cbb4;
+      box-shadow: 0 18px 25px -12px rgba(184, 124, 78, 0.25);
+      transform: translateY(-3px);
+      background: #fffcf9;
+    }
+
+    .menu-emoji {
+      font-size: 2.3rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .menu-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2b1e14;
+      letter-spacing: -0.2px;
+      margin-bottom: 0.25rem;
+    }
+
+    .menu-desc {
+      font-size: 0.75rem;
+      color: #927b68;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .price {
+      font-weight: 700;
+      color: #e86f2e;
+      font-size: 1.1rem;
+    }
+
+    .price small {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #b2947a;
+    }
+
+    .add-btn {
+      background: #f7ede4;
+      border: none;
+      border-radius: 3rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e86f2e;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 8px rgba(232, 111, 46, 0.15);
+    }
+
+    .add-btn:hover {
+      background: #e86f2e;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .add-btn.added {
+      background: #2d8f4e;
+      color: white;
+      pointer-events: none;
+    }
+
+    /* booking panel */
+    .booking-section {
+      background: #fcf7f2;
+      border-radius: 2rem;
+      padding: 1.6rem 1.4rem;
+      box-shadow: inset 0 1px 5px #ffffff, 0 10px 20px -12px rgba(0, 0, 0, 0.15);
+      border: 1px solid #f3e3d6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-items {
+      flex: 1;
+      min-height: 140px;
+      max-height: 210px;
+      overflow-y: auto;
+      margin-bottom: 1.2rem;
+      padding-right: 0.3rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px dashed #edd9c9;
+      font-size: 0.95rem;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .cart-item-emoji {
+      font-size: 1.3rem;
+      background: #fff3e9;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-item-name {
+      font-weight: 600;
+      color: #3d2c1d;
+      font-size: 0.9rem;
+    }
+
+    .cart-item-qty {
+      font-size: 0.75rem;
+      color: #b2947a;
+      margin-left: 0.3rem;
+    }
+
+    .cart-item-price {
+      font-weight: 600;
+      color: #e86f2e;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .remove-item {
+      background: transparent;
+      border: none;
+      color: #b2947a;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+      padding: 0.2rem;
+    }
+
+    .remove-item:hover {
+      color: #e86f2e;
+    }
+
+    .empty-cart {
+      color: #b9a48f;
+      text-align: center;
+      padding: 2rem 1rem;
+      font-style: italic;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .empty-cart i {
+      font-size: 2rem;
+      color: #e5d2c2;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.8rem;
+      margin-bottom: 1rem;
+      border-top: 2px solid #eedbcb;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #2d1b0e;
+    }
+
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #7b604b;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin-left: 0.2rem;
+    }
+
+    .input-group input, .input-group select {
+      padding: 0.75rem 1rem;
+      border-radius: 1.8rem;
+      border: 1.5px solid #eedbcb;
+      background: white;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      width: 100%;
+      color: #2d1b0e;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      outline: none;
+      border-color: #e86f2e;
+      box-shadow: 0 0 0 3px rgba(232, 111, 46, 0.12);
+    }
+
+    .book-btn {
+      background: #e86f2e;
+      border: none;
+      padding: 1rem;
+      border-radius: 2.5rem;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 12px 20px -10px #e86f2e;
+      letter-spacing: 0.3px;
+      margin-top: 0.2rem;
+    }
+
+    .book-btn:hover {
+      background: #d55e1e;
+      transform: scale(1.01);
+      box-shadow: 0 18px 25px -12px #e86f2e;
+    }
+
+    .book-btn:disabled {
+      background: #d4c0b2;
+      box-shadow: none;
+      transform: none;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .toast-message {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2d2d2d;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .toast-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* tiny adjustments */
+    .note {
+      font-size: 0.7rem;
+      color: #b2947a;
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
+    i.fa-solid, i.fa-regular {
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- header -->
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-utensils"></i>
+        <h1>FeastFlow</h1>
+      </div>
+      <div class="badge">
+        <i class="fas fa-clock"></i> free delivery over $25
+      </div>
+    </div>
+
+    <!-- search + category -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search dishes (pizza, sushi...)" autocomplete="off">
+      </div>
+      <div class="category-filters" id="categoryFilters">
+        <button class="cat-btn active" data-cat="all"><i class="fas fa-compass"></i> All</button>
+        <button class="cat-btn" data-cat="pizza"><i class="fas fa-pizza-slice"></i> Pizza</button>
+        <button class="cat-btn" data-cat="sushi"><i class="fas fa-fish"></i> Sushi</button>
+        <button class="cat-btn" data-cat="burger"><i class="fas fa-hamburger"></i> Burger</button>
+        <button class="cat-btn" data-cat="dessert"><i class="fas fa-ice-cream"></i> Dessert</button>
+      </div>
+    </div>
+
+    <!-- main dashboard -->
+    <div class="dashboard">
+      <!-- menu section -->
+      <div class="menu-section">
+        <h2><i class="fas fa-book-open"></i> Our menu</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+      </div>
+
+      <!-- booking / cart section -->
+      <div class="booking-section">
+        <h2><i class="fas fa-bag-shopping"></i> Your booking</h2>
+        <div class="cart-items" id="cartItems">
+          <!-- filled dynamically -->
+        </div>
+        <div class="total-row">
+          <span>Total</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+
+        <div class="booking-form">
+          <div class="input-group">
+            <label><i class="fas fa-user"></i> Full name</label>
+            <input type="text" id="customerName" placeholder="Alex Morgan" value="Alex Morgan">
+          </div>
+          <div class="input-group">
+            <label><i class="fas fa-clock"></i> Pickup time</label>
+            <select id="pickupTime">
+              <option value="12:00">12:00 PM</option>
+              <option value="12:30">12:30 PM</option>
+              <option value="13:00" selected>1:00 PM</option>
+              <option value="13:30">1:30 PM</option>
+              <option value="14:00">2:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="book-btn" id="bookNowBtn">
+          <i class="fas fa-check-circle"></i> Confirm booking
+        </button>
+        <div class="note">🔔 You’ll receive a confirmation shortly</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast message -->
+  <div class="toast-message" id="toast"><i class="fas fa-check-circle"></i> <span id="toastText">Added to cart</span></div>
+
+  <script>
+    (function(){
+      // ---------- MENU DATA ----------
+      const menuItems = [
+        { id: 1, name: 'Margherita Pizza', desc: 'San Marzano tomato, mozzarella', price: 12.90, emoji: '🍕', category: 'pizza' },
+        { id: 2, name: 'Pepperoni Pizza', desc: 'Spicy pepperoni, extra cheese', price: 14.50, emoji: '🍕', category: 'pizza' },
+        { id: 3, name: 'California Roll', desc: 'Crab, avocado, cucumber', price: 9.80, emoji: '🍣', category: 'sushi' },
+        { id: 4, name: 'Salmon Nigiri', desc: 'Fresh salmon, wasabi', price: 8.20, emoji: '🍣', category: 'sushi' },
+        { id: 5, name: 'Classic Burger', desc: 'Beef patty, cheddar, lettuce', price: 11.40, emoji: '🍔', category: 'burger' },
+        { id: 6, name: 'Bacon BBQ Burger', desc: 'Smoky bacon, onion rings', price: 13.70, emoji: '🍔', category: 'burger' },
+        { id: 7, name: 'Chocolate Lava', desc: 'Warm chocolate, vanilla ice cream', price: 7.50, emoji: '🍫', category: 'dessert' },
+        { id: 8, name: 'Berry Cheesecake', desc: 'New York style, berry coulis', price: 8.90, emoji: '🍰', category: 'dessert' },
+        { id: 9, name: 'Veggie Supreme', desc: 'Bell peppers, olives, mushroom', price: 13.20, emoji: '🍕', category: 'pizza' },
+        { id: 10, name: 'Dragon Roll', desc: 'Eel, avocado, tobiko', price: 15.30, emoji: '🍣', category: 'sushi' },
+        { id: 11, name: 'Double Cheese', desc: 'Two patties, double cheddar', price: 15.90, emoji: '🍔', category: 'burger' },
+        { id: 12, name: 'Tiramisu', desc: 'Espresso-soaked ladyfingers', price: 7.90, emoji: '☕', category: 'dessert' }
+      ];
+
+      // ---------- STATE ----------
+      let cart = [];                // { id, name, price, emoji, quantity }
+      let activeCategory = 'all';
+      let searchTerm = '';
+
+      // ---------- DOM refs ----------
+      const menuGrid = document.getElementById('menuGrid');
+      const cartItemsDiv = document.getElementById('cartItems');
+      const cartTotalSpan = document.getElementById('cartTotal');
+      const bookNowBtn = document.getElementById('bookNowBtn');
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilters = document.getElementById('categoryFilters');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+
+      // ---------- TOAST helper ----------
+      let toastTimeout;
+      function showToast(message, icon = 'fa-check-circle') {
+        toastText.textContent = message;
+        toast.querySelector('i').className = `fas ${icon}`;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      // ---------- RENDER MENU (filtered) ----------
+      function renderMenu() {
+        let filtered = menuItems.filter(item => {
+          const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+          const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                item.desc.toLowerCase().includes(searchTerm.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+          menuGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:#b2947a;">
+            <i class="fas fa-search" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>
+            No dishes match your search.
+          </div>`;
+          return;
+        }
+
+        menuGrid.innerHTML = filtered.map(item => {
+          const inCart = cart.find(c => c.id === item.id);
+          const addedClass = inCart ? 'added' : '';
+          const btnIcon = inCart ? 'fa-check' : 'fa-plus';
+          return `
+            <div class="menu-card" data-id="${item.id}">
+              <div class="menu-emoji">${item.emoji}</div>
+              <h3>${item.name}</h3>
+              <div class="menu-desc"><i class="fas fa-leaf" style="font-size:0.6rem;"></i> ${item.desc}</div>
+              <div class="price-row">
+                <span class="price">$${item.price.toFixed(2)} <small>USD</small></span>
+                <button class="add-btn ${addedClass}" data-id="${item.id}" ${inCart ? 'disabled' : ''}>
+                  <i class="fas ${btnIcon}"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // attach event listeners to add buttons
+        document.querySelectorAll('.add-btn:not(.added)').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = Number(btn.dataset.id);
+            addToCart(id);
+          });
+        });
+      }
+
+      // ---------- ADD TO CART ----------
+      function addToCart(id) {
+        const item = menuItems.find(i => i.id === id);
+        if (!item) return;
+
+        const existing = cart.find(c => c.id === id);
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ id: item.id, name: item.name, price: item.price, emoji: item.emoji, quantity: 1 });
+        }
+
+        renderMenu();      // update add-button state
+        renderCart();      // update cart panel
+        showToast(`${item.emoji} ${item.name} added`, 'fa-cart-plus');
+      }
+
+      // ---------- RENDER CART ----------
+      function renderCart() {
+        if (cart.length === 0) {
+          cartItemsDiv.innerHTML = `
+            <div class="empty-cart">
+              <i class="fas fa-shopping-basket"></i>
+              Your basket is empty.<br>Add something tasty!
+            </div>
+          `;
+          cartTotalSpan.textContent = '$0.00';
+          bookNowBtn.disabled = true;
+          return;
+        }
+
+        bookNowBtn.disabled = false;
+
+        let total = 0;
+        cartItemsDiv.innerHTML = cart.map(item => {
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+          return `
+            <div class="cart-item">
+              <div class="cart-item-info">
+                <span class="cart-item-emoji">${item.emoji}</span>
+                <div>
+                  <span class="cart-item-name">${item.name}</span>
+                  <span class="cart-item-qty">x${item.quantity}</span>
+                </div>
+              </div>
+              <div class="cart-item-price">
+                $${itemTotal.toFixed(2)}
+                <button class="remove-item" data-id="${item.id}" title="Remove one"><i class="fas fa-trash-alt"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        cartTotalSpan.textContent = `$${total.toFixed(2)}`;
+
+        // Attach remove listeners (remove one quantity, or delete if quantity becomes 0)
+        document.querySelectorAll('.remove-item').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = Number(btn.dataset.id);
+            removeOneFromCart(id);
+          });
+        });
+      }
+
+      // ---------- REMOVE ONE QUANTITY ----------
+      function removeOneFromCart(id) {
+        const index = cart.findIndex(c => c.id === id);
+        if (index === -1) return;
+
+        if (cart[index].quantity > 1) {
+          cart[index].quantity -= 1;
+        } else {
+          cart.splice(index, 1);
+        }
+
+        renderCart();
+        renderMenu();   // to re-enable add button if item removed completely
+        showToast('Item updated', 'fa-trash-alt');
+      }
+
+      // ---------- FILTER EVENTS ----------
+      // category buttons
+      categoryFilters.addEventListener('click', (e) => {
+        const btn = e.target.closest('.cat-btn');
+        if (!btn) return;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.dataset.cat;
+        renderMenu();
+      });
+
+      // search input (with debounce)
+      let searchTimeout;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchTerm = e.target.value.trim();
+          renderMenu();
+        }, 200);
+      });
+
+      // ---------- BOOKING BUTTON ----------
+      bookNowBtn.addEventListener('click', () => {
+        if (cart.length === 0) {
+          showToast('Your cart is empty', 'fa-exclamation-circle');
+          return;
+        }
+
+        const nameInput = document.getElementById('customerName');
+        const name = nameInput.value.trim() || 'Guest';
+        const time = document.getElementById('pickupTime').value;
+
+        // fake booking success
+        showToast(`🎉 Booking confirmed, ${name}! Pickup at ${time}`, 'fa-check-circle');
+
+        // clear cart
+        cart = [];
+        renderCart();
+        renderMenu();    // reset add buttons
+
+        // optional: reset name field (keep friendly)
+        // nameInput.value = '';    // not clearing to keep demo friendly
+      });
+
+      // ---------- INITIAL RENDER ----------
+      renderMenu();
+      renderCart();
+
+      // small extra: pressing Enter on search doesn't reload
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+      });
+    })();
+  </script>
+</body>
+</html>
